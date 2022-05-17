@@ -27,6 +27,7 @@ Route::namespace ('App\Http\Controllers\API')->group(function () {
     Route::get('get-question-paper', 'AdminController@getAllQuestion');
     Route::post('get-student-question-paper', 'AdminController@getStudentQuestion');
     Route::post('accept-or-reject', 'AdminController@accptOrReject');
+    Route::get('all-year', 'AdminController@getAllYear');
 
     
 }

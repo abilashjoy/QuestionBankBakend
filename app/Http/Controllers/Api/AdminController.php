@@ -103,6 +103,7 @@ class AdminController extends Controller
             'course_id' => 'required',
             'semester' => 'required',
             'question' => 'required',
+            'year_id' => 'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
@@ -112,6 +113,7 @@ class AdminController extends Controller
         $course_id = $request->input('course_id');
         $semester = $request->input('semester');
         $question = $request->input('question');
+        $year_id = $request->input('year_id');
 
         $host = $_SERVER['HTTP_HOST'];
         $url = explode(".", $host);
@@ -127,6 +129,7 @@ class AdminController extends Controller
                 'dep_id' => $dep_id,
                 'course_id' => $course_id,
                 'semester' => $semester,
+                'year_id'  => $year_id,
                 'question_url' => $path_url1,
                 'status' => $status,
             ]);
@@ -156,8 +159,9 @@ class AdminController extends Controller
         $question = DB::table('questions as q')
             ->leftjoin('departments as d', 'd.dep_id', 'q.dep_id')
             ->leftjoin('course as c', 'c.id', 'q.course_id')
+            ->leftjoin('year as y','y.id','q.year_id')
             ->where('q.status', 1)
-            ->select('q.*', 'd.dep_name', 'c.course_name')
+            ->select('q.*', 'd.dep_name', 'c.course_name','y.year')
             ->get();
             foreach($question as $q)
             {
@@ -186,6 +190,7 @@ class AdminController extends Controller
 
             $validator = validator::make($request->all(), [
     
+                'year_id' => 'required',
                 'dep_id' => 'required',
                 'course_id' => 'required',
                 'semester' => 'required',
@@ -198,6 +203,7 @@ class AdminController extends Controller
             $dep_id = $request->input('dep_id');
             $course_id = $request->input('course_id');
             $semester = $request->input('semester');
+            $year_id = $request->input('year_id');
            
 
         $question = DB::table('questions as q')
@@ -206,8 +212,9 @@ class AdminController extends Controller
              ->where('q.semester',$semester)
             ->leftjoin('departments as d', 'd.dep_id', 'q.dep_id')
             ->leftjoin('course as c', 'c.id', 'q.course_id')
+            ->leftjoin('year as y', 'y.id', 'q.year_id')
             ->where('q.status', 2)
-            ->select('q.*', 'd.dep_name', 'c.course_name')
+            ->select('q.*', 'd.dep_name', 'c.course_name','y.year')
             ->get();
             foreach($question as $q)
             {
@@ -285,5 +292,25 @@ class AdminController extends Controller
              
           }
     }
+
+
+
+    /***
+     *getAllYear
+     */
+
+     public function getAllYear()
+         {
+
+          $year =DB::table('year')
+            ->get();
+         if(count($year) > 0)
+        {
+    return response()->json(['success'=>true,'message'=>'Data found','data'=>$year]);
+     }else{
+        return response()->json(['success'=>false,'message'=>'Data not found','data'=>$year]);
+     }
+
+       }
 
 }
